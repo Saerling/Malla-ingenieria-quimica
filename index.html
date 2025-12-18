@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Malla Curricular Ingeniería Química</title>
+<style>
+    body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2c3e50;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(10, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .semester {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    .semester h2 {
+        text-align: center;
+        font-size: 16px;
+        margin: 5px 0 10px;
+        color: #34495e;
+    }
+
+    .category {
+        font-size: 13px;
+        margin: 8px 0 4px;
+        font-weight: bold;
+        color: #7f8c8d;
+    }
+
+    .course {
+        background: #ecf0f1;
+        border-radius: 6px;
+        padding: 6px 8px;
+        margin-bottom: 6px;
+        font-size: 13px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s;
+    }
+
+    .course:hover {
+        transform: scale(1.02);
+    }
+
+    .course.approved {
+        background: #c8e6c9;
+        text-decoration: line-through;
+        color: #2e7d32;
+    }
+
+    .course.locked {
+        background: #f8d7da;
+        color: #721c24;
+        cursor: not-allowed;
+    }
+
+    .course.locked::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 105%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: #fff;
+        padding: 4px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+
+    .course.locked:hover::after {
+        opacity: 1;
+    }
+</style>
+</head>
+<body>
+
+<h1>Malla Curricular – Ingeniería Química</h1>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const courses = {
+A:{name:"Principios de química",credits:3},
+B:{name:"Cálculo diferencial",credits:4},
+C:{name:"Álgebra lineal",credits:4,req:["B"]},
+D:{name:"Cálculo integral",credits:4,req:["B"]},
+E:{name:"Fundamentos de mecánica",credits:4,req:["B"]},
+LL:{name:"Balance de materia",credits:3},
+F:{name:"Cálculo en varias variables",credits:4,req:["C","D"]},
+G:{name:"Termodinámica",credits:3,req:["LL"]},
+H:{name:"Ecuaciones diferenciales",credits:4,req:["C","D"]},
+KK:{name:"Fluidos",credits:3,req:["E","G"]},
+HH:{name:"Termodinámica química",credits:3,req:["F","G"]},
+J:{name:"Métodos numéricos",credits:3,req:["H"]},
+K:{name:"Transferencia de calor",credits:4,req:["G","H"]},
+JJ:{name:"Manejo de sólidos",credits:3,req:["KK"]},
+L:{name:"Balance de energía y equilibrio químico",credits:3,req:["HH"]},
+UU:{name:"Ingeniería económica",credits:3,req:["D"]},
+M:{name:"Transferencia de masa",credits:3,req:["H"]},
+O:{name:"Operaciones de separación",credits:3,req:["M","L"]},
+N:{name:"Ingeniería de reacciones químicas",credits:3,req:["L"]},
+TT:{name:"Control de procesos",credits:3,req:["J","N"]},
+P:{name:"Diseño de procesos químicos",credits:3,req:["L"]}
+};
+
+const semesters = [
+["A","B","LL"],
+["C","D","E"],
+["F","G"],
+["H","KK","HH"],
+["J","K","JJ","L"],
+["UU","M"],
+["O","N"],
+["TT","P"]
+];
+
+let approved = JSON.parse(localStorage.getItem("approvedCourses")) || [];
+
+function save(){
+    localStorage.setItem("approvedCourses",JSON.stringify(approved));
+}
+
+function canTake(code){
+    if(!courses[code].req) return true;
+    return courses[code].req.every(r=>approved.includes(r));
+}
+
+function tooltip(code){
+    return "Falta aprobar: "+courses[code].req.filter(r=>!approved.includes(r)).map(r=>courses[r].name).join(", ");
+}
+
+function toggle(code){
+    if(!canTake(code)) return;
+    if(approved.includes(code)){
+        approved = approved.filter(c=>c!==code);
+    } else {
+        approved.push(code);
+    }
+    save();
+    render();
+}
+
+function render(){
+    const grid = document.getElementById("grid");
+    grid.innerHTML="";
+    semesters.forEach((sem,i)=>{
+        const div = document.createElement("div");
+        div.className="semester";
+        div.innerHTML=`<h2>Semestre ${i+1}</h2>`;
+        sem.forEach(code=>{
+            const c = document.createElement("div");
+            c.className="course";
+            c.textContent=`${courses[code].name} (${courses[code].credits})`;
+            if(approved.includes(code)) c.classList.add("approved");
+            if(!canTake(code)){
+                c.classList.add("locked");
+                c.dataset.tooltip = tooltip(code);
+            }
+            c.onclick=()=>toggle(code);
+            div.appendChild(c);
+        });
+        grid.appendChild(div);
+    });
+}
+
+render();
+</script>
+
+</body>
+</html>
