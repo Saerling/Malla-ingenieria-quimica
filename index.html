@@ -1,175 +1,371 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Malla Curricular Ingeniería Química</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Interactiva - Ingeniería Química</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --locked: #cbd5e1;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
 
-<style>
-body{
-    font-family: "Segoe UI", sans-serif;
-    background:#f4f6f8;
-    margin:0;
-    padding:20px;
-}
-h1{
-    text-align:center;
-    color:#2c3e50;
-    margin-bottom:25px;
-}
-.grid{
-    display:grid;
-    grid-template-columns:repeat(10, minmax(240px,1fr));
-    gap:15px;
-}
-.semester{
-    background:#fff;
-    border-radius:12px;
-    padding:10px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.08);
-}
-.semester h2{
-    text-align:center;
-    font-size:16px;
-    color:#34495e;
-}
-.category{
-    font-size:13px;
-    font-weight:bold;
-    color:#7f8c8d;
-    margin:8px 0 4px;
-}
-.course{
-    background:#ecf0f1;
-    border-radius:6px;
-    padding:6px 8px;
-    margin-bottom:6px;
-    font-size:13px;
-    cursor:pointer;
-    transition:0.2s;
-    position:relative;
-}
-.course:hover{transform:scale(1.02);}
-.course.approved{
-    background:#c8e6c9;
-    color:#2e7d32;
-    text-decoration:line-through;
-}
-.course.locked{
-    background:#f8d7da;
-    color:#721c24;
-    cursor:not-allowed;
-}
-.course.locked::after{
-    content:attr(data-tooltip);
-    position:absolute;
-    bottom:105%;
-    left:50%;
-    transform:translateX(-50%);
-    background:#333;
-    color:#fff;
-    padding:4px 6px;
-    border-radius:4px;
-    font-size:11px;
-    white-space:nowrap;
-    opacity:0;
-    pointer-events:none;
-}
-.course.locked:hover::after{opacity:1;}
-</style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { font-weight: 600; color: var(--primary); }
+
+        /* Contenedor de la Malla */
+        .malla-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 columnas para 10 semestres */
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 50px;
+        }
+
+        /* Columnas de Semestres */
+        .semestre-col {
+            min-width: 200px;
+            background: rgba(226, 232, 240, 0.3);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .semestre-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 5px;
+        }
+
+        /* Tarjetas de Materia */
+        .materia {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .materia:hover:not(.locked) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .materia.approved {
+            background-color: var(--success);
+            color: white;
+            border-color: #059669;
+        }
+
+        .materia.locked {
+            background-color: var(--locked);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .materia-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: block;
+        }
+
+        .materia-credits {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .approved .materia-credits { color: #d1fae5; }
+
+        /* Tooltip */
+        .materia::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #334155;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            width: 150px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .materia:hover::after {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .category-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0 5px 0;
+            display: block;
+        }
+
+        @media (max-width: 1200px) {
+            .malla-container { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
 </head>
-
 <body>
 
-<h1>Malla Curricular – Ingeniería Química</h1>
-<div class="grid" id="grid"></div>
+<header>
+    <h1>Malla Curricular: Ingeniería Química</h1>
+    <p>Haz clic en una materia para marcarla como aprobada.</p>
+    <button onclick="resetProgreso()" style="padding: 8px 16px; cursor:pointer;">Reiniciar Progreso</button>
+</header>
+
+<div class="malla-container" id="malla">
+    </div>
 
 <script>
-const courses={
-A:{name:"Principios de química",c:3},
-B:{name:"Cálculo diferencial",c:4},
-C:{name:"Álgebra lineal",c:4,req:["B"]},
-D:{name:"Cálculo integral",c:4,req:["B"]},
-E:{name:"Fundamentos de mecánica",c:4,req:["B"]},
-LL:{name:"Balance de materia",c:3},
-F:{name:"Cálculo en varias variables",c:4,req:["C","D"]},
-G:{name:"Termodinámica",c:3,req:["LL"]},
-H:{name:"Ecuaciones diferenciales",c:4,req:["C","D"]},
-KK:{name:"Fluidos",c:3,req:["E","G"]},
-HH:{name:"Termodinámica química",c:3,req:["F","G"]},
-J:{name:"Métodos numéricos",c:3,req:["H"]},
-K:{name:"Transferencia de calor",c:4,req:["G","H"]},
-JJ:{name:"Manejo de sólidos",c:3,req:["KK"]},
-L:{name:"Balance de energía y equilibrio químico",c:3,req:["HH"]},
-UU:{name:"Ingeniería económica",c:3,req:["D"]},
-M:{name:"Transferencia de masa",c:3,req:["H"]},
-O:{name:"Operaciones de separación",c:3,req:["M","L"]},
-N:{name:"Ingeniería de reacciones químicas",c:3,req:["L"]},
-TT:{name:"Control de procesos",c:3,req:["J","N"]},
-P:{name:"Diseño de procesos químicos",c:3,req:["L"]}
-};
+    // Estructura de la Malla
+    const data = [
+        {
+            semestre: 1,
+            materias: [
+                { id: "A", name: "Principios de Química", cred: 3, req: [], cat: "Fundamentación" },
+                { id: "LAB_TB", name: "Lab. Técnicas Básicas", cred: 3, req: [], cat: "Fundamentación" },
+                { id: "B", name: "Cálculo Diferencial", cred: 4, req: [], cat: "Fundamentación" },
+                { id: "OPT_H", name: "Optativa Herramientas Ing.", cred: 3, req: [], cat: "Fundamentación" },
+                { id: "INTRO_IQ", name: "Introducción a Ing. Química", cred: 3, req: [], cat: "Disciplinar" }
+            ]
+        },
+        {
+            semestre: 2,
+            materias: [
+                { id: "ANA_Q", name: "Principios Análisis Químico", cred: 3, req: ["A"], cat: "Fundamentación" },
+                { id: "C", name: "Álgebra Lineal", cred: 4, req: ["B"], cat: "Fundamentación" },
+                { id: "D", name: "Cálculo Integral", cred: 4, req: ["B"], cat: "Fundamentación" },
+                { id: "E", name: "Fundamentos de Mecánica", cred: 4, req: ["B"], cat: "Fundamentación" },
+                { id: "LL", name: "Balance de Materia", cred: 3, req: [], cat: "Disciplinar" }
+            ]
+        },
+        {
+            semestre: 3,
+            materias: [
+                { id: "LAB_ANA", name: "Lab. Principios Análisis Q.", cred: 3, req: ["A"], cat: "Fundamentación" },
+                { id: "BIO", name: "Biología Molecular y Celular", cred: 3, req: [], cat: "Fundamentación" },
+                { id: "F", name: "Cálculo Varias Variables", cred: 4, req: ["C", "D"], cat: "Fundamentación" },
+                { id: "FIS_EM", name: "Fund. Elec. y Magnetismo", cred: 4, req: ["D", "E"], cat: "Fundamentación" },
+                { id: "G", name: "Termodinámica", cred: 3, req: ["LL"], cat: "Disciplinar" },
+                { id: "LIB_1", name: "Libre Elección", cred: 3, req: [], cat: "Libre" }
+            ]
+        },
+        {
+            semestre: 4,
+            materias: [
+                { id: "Q_ORG", name: "Principios Química Orgánica", cred: 3, req: ["A"], cat: "Fundamentación" },
+                { id: "PROBA", name: "Probabilidad y Estadística", cred: 3, req: ["B"], cat: "Fundamentación" },
+                { id: "H", name: "Ecuaciones Diferenciales", cred: 4, req: ["C", "D"], cat: "Fundamentación" },
+                { id: "KK", name: "Fluidos", cred: 3, req: ["E", "G"], cat: "Disciplinar" },
+                { id: "TALLER1", name: "Taller 1", cred: 1, req: ["F", "G"], cat: "Disciplinar" },
+                { id: "HH", name: "Termodinámica Química", cred: 3, req: ["F", "G"], cat: "Disciplinar" }
+            ]
+        },
+        {
+            semestre: 5,
+            materias: [
+                { id: "J", name: "Métodos Numéricos", cred: 3, req: ["H"], cat: "Fundamentación" },
+                { id: "K", name: "Transferencia de Calor", cred: 4, req: ["G", "H"], cat: "Disciplinar" },
+                { id: "JJ", name: "Manejo de Sólidos", cred: 3, req: ["KK"], cat: "Disciplinar" },
+                { id: "L", name: "Balance Energía y Equil. Químico", cred: 3, req: ["HH"], cat: "Disciplinar" },
+                { id: "LIB_2", name: "Libre Elección", cred: 3, req: [], cat: "Libre" }
+            ]
+        },
+        {
+            semestre: 6,
+            materias: [
+                { id: "LAB_ORG", name: "Lab. Química Orgánica", cred: 2, req: ["A"], cat: "Fundamentación" },
+                { id: "UU", name: "Ingeniería Económica", cred: 3, req: ["D"], cat: "Fundamentación" },
+                { id: "M", name: "Transferencia de Masa", cred: 3, req: ["H"], cat: "Disciplinar" },
+                { id: "TALLER2", name: "Taller 2", cred: 1, req: ["H"], cat: "Disciplinar" },
+                { id: "LAB_TERM", name: "Lab. Propiedades Termo/Transp", cred: 3, req: ["L"], cat: "Disciplinar" },
+                { id: "OPT_T", name: "Optativa de Termodinámica", cred: 3, req: ["L"], cat: "Disciplinar" },
+                { id: "LIB_3", name: "Libre Elección", cred: 3, req: [], cat: "Libre" }
+            ]
+        },
+        {
+            semestre: 7,
+            materias: [
+                { id: "OPT_ADM", name: "Optativa Econ-Admin", cred: 3, req: [], cat: "Fundamentación" },
+                { id: "GERENCIA", name: "Gerencia y Gestión Proy.", cred: 3, req: ["UU"], cat: "Fundamentación" },
+                { id: "O", name: "Operaciones de Separación", cred: 3, req: ["M", "L"], cat: "Disciplinar" },
+                { id: "LAB_FST", name: "Lab. Fluidos, Sol. y Transf.", cred: 3, req: ["K"], cat: "Disciplinar" },
+                { id: "N", name: "Ingeniería Reacciones Quím.", cred: 3, req: ["L"], cat: "Disciplinar" },
+                { id: "LIB_4", name: "Libre Elección", cred: 3, req: [], cat: "Libre" }
+            ]
+        },
+        {
+            semestre: 8,
+            materias: [
+                { id: "OPT_MAT", name: "Optativa Materiales", cred: 3, req: ["C_108"], cat: "Disciplinar" },
+                { id: "TT", name: "Control de Procesos", cred: 3, req: ["J", "N"], cat: "Disciplinar" },
+                { id: "LAB_SR", name: "Lab. Sep/Reacc/Control", cred: 3, req: ["O", "TT"], cat: "Disciplinar" },
+                { id: "OPT_PRO", name: "Optativa Proc. Quím/Bioq", cred: 3, req: ["M", "N"], cat: "Disciplinar" },
+                { id: "P", name: "Diseño de Procesos Quím/Bioq", cred: 3, req: ["L"], cat: "Disciplinar" },
+                { id: "LIB_5", name: "Libre Elección", cred: 4, req: [], cat: "Libre" }
+            ]
+        },
+        {
+            semestre: 9,
+            materias: [
+                { id: "TALLER_PRO", name: "Taller Proy. Interdiscip.", cred: 3, req: ["CD_53"], cat: "Disciplinar" },
+                { id: "DIS_PLANT", name: "Diseño Plantas y Equipos", cred: 3, req: ["O", "P"], cat: "Disciplinar" },
+                { id: "ING_PROC", name: "Ingeniería de Procesos", cred: 3, req: ["P"], cat: "Disciplinar" },
+                { id: "LIB_6", name: "Libre Elección", cred: 3, req: [], cat: "Libre" },
+                { id: "LIB_7", name: "Libre Elección", cred: 4, req: [], cat: "Libre" }
+            ]
+        },
+        {
+            semestre: 10,
+            materias: [
+                { id: "GRADO", name: "Trabajo de Grado", cred: 6, req: ["CD_60"], cat: "Disciplinar" },
+                { id: "LIB_8", name: "Libre Elección", cred: 3, req: [], cat: "Libre" },
+                { id: "LIB_9", name: "Libre Elección", cred: 3, req: [], cat: "Libre" },
+                { id: "LIB_10", name: "Libre Elección", cred: 3, req: [], cat: "Libre" },
+                { id: "LIB_11", name: "Libre Elección", cred: 4, req: [], cat: "Libre" }
+            ]
+        }
+    ];
 
-const semesters=[
-{title:"Primer semestre",list:["A","B","LL"]},
-{title:"Segundo semestre",list:["C","D","E"]},
-{title:"Tercer semestre",list:["F","G"]},
-{title:"Cuarto semestre",list:["H","KK","HH"]},
-{title:"Quinto semestre",list:["J","K","JJ","L"]},
-{title:"Sexto semestre",list:["UU","M"]},
-{title:"Séptimo semestre",list:["O","N"]},
-{title:"Octavo semestre",list:["TT","P"]}
-];
+    let approved = JSON.parse(localStorage.getItem('quimicaProgreso')) || [];
 
-let approved=JSON.parse(localStorage.getItem("approvedIQ"))||[];
+    const mallaElement = document.getElementById('malla');
 
-function save(){
-    localStorage.setItem("approvedIQ",JSON.stringify(approved));
-}
-
-function canTake(code){
-    if(!courses[code].req) return true;
-    return courses[code].req.every(r=>approved.includes(r));
-}
-
-function tooltip(code){
-    return "Falta aprobar: "+courses[code].req
-        .filter(r=>!approved.includes(r))
-        .map(r=>courses[r].name)
-        .join(", ");
-}
-
-function toggle(code){
-    if(!canTake(code)) return;
-    approved.includes(code)
-        ? approved=approved.filter(x=>x!==code)
-        : approved.push(code);
-    save();
-    render();
-}
-
-function render(){
-    const grid=document.getElementById("grid");
-    grid.innerHTML="";
-    semesters.forEach(s=>{
-        const d=document.createElement("div");
-        d.className="semester";
-        d.innerHTML=`<h2>${s.title}</h2>`;
-        s.list.forEach(code=>{
-            const c=document.createElement("div");
-            c.className="course";
-            c.textContent=`${courses[code].name} (${courses[code].c})`;
-            if(approved.includes(code)) c.classList.add("approved");
-            if(!canTake(code)){
-                c.classList.add("locked");
-                c.dataset.tooltip=tooltip(code);
-            }
-            c.onclick=()=>toggle(code);
-            d.appendChild(c);
+    function render() {
+        mallaElement.innerHTML = '';
+        
+        // Calcular créditos actuales
+        let totalCreds = 0;
+        let discCreds = 0;
+        
+        data.forEach(sem => {
+            sem.materias.forEach(m => {
+                if(approved.includes(m.id)) {
+                    totalCreds += m.cred;
+                    if(m.cat === "Disciplinar") discCreds += m.cred;
+                }
+            });
         });
-        grid.appendChild(d);
-    });
-}
 
-render();
+        data.forEach(semestre => {
+            const col = document.createElement('div');
+            col.className = 'semestre-col';
+            col.innerHTML = `<div class="semestre-title">Semestre ${semestre.semestre}</div>`;
+            
+            let lastCat = "";
+            semestre.materias.forEach(m => {
+                if(m.cat !== lastCat) {
+                    col.innerHTML += `<span class="category-label">${m.cat}</span>`;
+                    lastCat = m.cat;
+                }
+
+                const card = document.createElement('div');
+                card.className = `materia ${approved.includes(m.id) ? 'approved' : ''}`;
+                
+                // Lógica de Bloqueo
+                let missing = [];
+                // Chequeo de prerequisitos por ID
+                m.req.forEach(r => {
+                    if (r === "C_108") {
+                        if (totalCreds < 108) missing.push("108 créditos totales (Llevas " + totalCreds + ")");
+                    } else if (r === "CD_53") {
+                        if (discCreds < 53) missing.push("53 créditos disciplinares (Llevas " + discCreds + ")");
+                    } else if (r === "CD_60") {
+                        if (discCreds < 60) missing.push("60 créditos disciplinares (Llevas " + discCreds + ")");
+                    } else if (!approved.includes(r)) {
+                        const mReq = findMateria(r);
+                        missing.push(mReq ? mReq.name : r);
+                    }
+                });
+
+                if (missing.length > 0) {
+                    card.classList.add('locked');
+                    card.setAttribute('data-tooltip', "Requisitos: " + missing.join(", "));
+                } else {
+                    card.setAttribute('data-tooltip', approved.includes(m.id) ? "Aprobada" : "Haga clic para aprobar");
+                    card.onclick = () => toggleMateria(m.id);
+                }
+
+                card.innerHTML = `
+                    <span class="materia-name">${m.name}</span>
+                    <span class="materia-credits">${m.cred} Créditos</span>
+                `;
+                col.appendChild(card);
+            });
+            mallaElement.appendChild(col);
+        });
+    }
+
+    function findMateria(id) {
+        for (let s of data) {
+            let m = s.materias.find(mat => mat.id === id);
+            if (m) return m;
+        }
+        return null;
+    }
+
+    function toggleMateria(id) {
+        if (approved.includes(id)) {
+            // Al desmarcar, hay que verificar si otras dependen de esta
+            approved = approved.filter(item => item !== id);
+        } else {
+            approved.push(id);
+        }
+        save();
+        render();
+    }
+
+    function save() {
+        localStorage.setItem('quimicaProgreso', JSON.stringify(approved));
+    }
+
+    function resetProgreso() {
+        if(confirm("¿Seguro que quieres borrar todo tu progreso?")) {
+            approved = [];
+            save();
+            render();
+        }
+    }
+
+    render();
 </script>
 
 </body>
