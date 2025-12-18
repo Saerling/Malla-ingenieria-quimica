@@ -52,12 +52,15 @@
             font-weight: 600;
         }
 
+        /* COMANDO SOLICITADO: Ajuste de overflow para botones y tooltips */
         .malla-wrapper {
             display: flex;
             gap: 20px;
-            overflow-x: auto;
+            padding-top: 50px; /* Espacio para que el tooltip no se corte arriba */
             padding-bottom: 30px;
             justify-content: flex-start;
+            overflow-x: auto;
+            overflow-y: visible;
         }
 
         .semestre-col {
@@ -87,7 +90,6 @@
             border-bottom: 1px solid var(--border);
         }
 
-        /* MATERIA CARD */
         .materia {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -119,9 +121,8 @@
 
         .m-name { font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 4px; }
         .m-cred { font-size: 0.75rem; color: var(--text-dim); }
-        .approved .m-cred { color: rgba(255,255,255,0.7); }
 
-        /* Tooltip */
+        /* Tooltip dinámico */
         .materia .tooltip {
             visibility: hidden;
             width: 180px;
@@ -136,11 +137,16 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 0.7rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
-        .materia.locked:hover .tooltip { visibility: visible; }
+        .materia.locked:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
 
         .btn-reset {
             background: #ef4444;
@@ -157,7 +163,7 @@
 <body>
 
 <header>
-    <h1 style="margin:0">Ingeniería Química - Malla Curricular</h1>
+    <h1 style="margin:0">Ingeniería Química - Malla Interactiva</h1>
     <div class="stats">
         <div class="stat-badge" id="total-c">Total Créditos: 0</div>
         <div class="stat-badge" id="disc-c">Créditos Disciplinares: 0</div>
@@ -248,9 +254,8 @@
         ]}
     ];
 
-    let approved = JSON.parse(localStorage.getItem('quim_prog')) || [];
+    let approved = JSON.parse(localStorage.getItem('quim_prog_final')) || [];
 
-    // Función para buscar datos de una materia por ID
     function getMatInfo(id) {
         for(let s of data) {
             let m = s.mat.find(x => x.id === id);
@@ -259,7 +264,6 @@
         return null;
     }
 
-    // Calcula estadísticas actuales
     function getStats() {
         let t = 0, d = 0;
         approved.forEach(id => {
@@ -272,7 +276,7 @@
         return { total: t, disc: d };
     }
 
-    // RECALCULA REQUISITOS EN EL MOMENTO DEL CLICK (Solución al error)
+    // Calcula si está bloqueada en tiempo real
     function checkStatus(materiaId) {
         const m = getMatInfo(materiaId);
         const stats = getStats();
@@ -287,31 +291,24 @@
                 missing.push(reqMat ? reqMat.n : req);
             }
         });
-
         return { isLocked: missing.length > 0, missing };
     }
 
     function toggle(id) {
-        // Al hacer click, recalculamos si está bloqueada en este instante
         const { isLocked } = checkStatus(id);
-
         if(approved.includes(id)) {
             approved = approved.filter(x => x !== id);
-        } else {
-            if(!isLocked) {
-                approved.push(id);
-            } else {
-                return; // No hace nada si está bloqueada
-            }
+        } else if(!isLocked) {
+            approved.push(id);
         }
-        localStorage.setItem('quim_prog', JSON.stringify(approved));
+        localStorage.setItem('quim_prog_final', JSON.stringify(approved));
         render();
     }
 
     function render() {
         const grid = document.getElementById('grid');
         const stats = getStats();
-        document.getElementById('total-c').innerText = `Créditos Totales: ${stats.total}`;
+        document.getElementById('total-c').innerText = `Total Créditos: ${stats.total}`;
         document.getElementById('disc-c').innerText = `Créditos Disciplinares: ${stats.disc}`;
         
         grid.innerHTML = '';
@@ -328,20 +325,17 @@
                     lastCat = m.cat;
                 }
 
-                // Aquí calculamos el estado visual
                 const { isLocked, missing } = checkStatus(m.id);
                 const isApproved = approved.includes(m.id);
 
                 const card = document.createElement('div');
                 card.className = `materia ${isApproved ? 'approved' : ''} ${(isLocked && !isApproved) ? 'locked' : ''}`;
-                
-                // Pasamos solo el ID, la función toggle decidirá si procede o no
                 card.onclick = () => toggle(m.id);
 
                 card.innerHTML = `
                     <span class="m-name">${m.n}</span>
                     <span class="m-cred">${m.c} Créditos</span>
-                    ${(isLocked && !isApproved) ? `<div class="tooltip">Falta: ${missing.join(", ")}</div>` : ''}
+                    ${(isLocked && !isApproved) ? `<div class="tooltip">Faltan: ${missing.join(", ")}</div>` : ''}
                 `;
                 col.appendChild(card);
             });
@@ -350,9 +344,9 @@
     }
 
     function reset() {
-        if(confirm("¿Borrar todo el progreso?")) {
+        if(confirm("¿Seguro que quieres reiniciar todo el progreso?")) {
             approved = [];
-            localStorage.removeItem('quim_prog');
+            localStorage.removeItem('quim_prog_final');
             render();
         }
     }
