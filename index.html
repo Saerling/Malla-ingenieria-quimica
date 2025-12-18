@@ -3,200 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Malla Curricular IQ - Modo Oscuro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Malla Curricular Química - Modo Oscuro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --header-bg: #1e293b;
-            --card-bg: #1e293b;
-            --card-hover: #334155;
+            --bg: #0f172a;
+            --surface: #1e293b;
             --primary: #38bdf8;
             --success: #10b981;
-            --locked: #475569;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
+            --text: #f1f5f9;
+            --text-dim: #94a3b8;
             --border: #334155;
+            --locked: #1e293b;
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 20px;
-            line-height: 1.5;
         }
 
         header {
+            max-width: 1200px;
+            margin: 0 auto 30px;
             text-align: center;
-            margin-bottom: 30px;
-            background: var(--header-bg);
-            padding: 25px;
-            border-radius: 16px;
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
             border: 1px solid var(--border);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
-
-        h1 { margin: 0; color: var(--primary); font-size: 1.8rem; }
 
         .stats {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
         }
 
-        .stat-item {
-            padding: 8px 16px;
-            border-radius: 12px;
-            background: #0ea5e920;
+        .stat-badge {
+            background: rgba(56, 189, 248, 0.1);
             color: var(--primary);
-            border: 1px solid #0ea5e940;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
             font-size: 0.9rem;
             font-weight: 600;
         }
 
-        .malla-container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+        .malla-wrapper {
+            display: flex;
             gap: 20px;
-            min-width: 1200px;
+            overflow-x: auto;
+            padding-bottom: 30px;
+            justify-content: flex-start;
         }
 
         .semestre-col {
+            min-width: 220px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .semestre-header {
-            text-align: center;
-            padding: 10px;
+        .sem-header {
             background: var(--primary);
-            color: #0f172a;
+            color: var(--bg);
+            text-align: center;
+            padding: 8px;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-
-        .category-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--text-muted);
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 10px 0 5px 0;
-            padding-left: 5px;
-            border-left: 2px solid var(--primary);
         }
 
+        .cat-tag {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* MATERIA CARD */
         .materia {
-            background: var(--card-bg);
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 10px;
             padding: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             position: relative;
-            user-select: none;
         }
 
-        .materia:not(.locked):hover {
+        .materia:hover:not(.locked) {
+            transform: translateY(-3px);
             border-color: var(--primary);
-            background: var(--card-hover);
-            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .materia.approved {
-            background-color: var(--success);
+            background: var(--success);
             border-color: #059669;
             color: white;
         }
 
         .materia.locked {
-            opacity: 0.5;
-            background-color: #0f172a;
-            border-style: dashed;
+            opacity: 0.4;
             cursor: not-allowed;
+            border-style: dashed;
+            background: rgba(15, 23, 42, 0.5);
         }
 
-        .materia-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .materia-credits {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .approved .materia-credits { color: #d1fae5; }
+        .m-name { font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 4px; }
+        .m-cred { font-size: 0.75rem; color: var(--text-dim); }
+        .approved .m-cred { color: rgba(255,255,255,0.7); }
 
         /* Tooltip */
         .materia .tooltip {
             visibility: hidden;
             width: 180px;
-            background-color: #f1f5f9;
-            color: #0f172a;
+            background: #f87171;
+            color: white;
             text-align: center;
             border-radius: 6px;
             padding: 8px;
             position: absolute;
-            z-index: 10;
+            z-index: 100;
             bottom: 110%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
-            opacity: 0;
-            transition: opacity 0.3s;
+            font-size: 0.7rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
             pointer-events: none;
         }
 
-        .materia:hover .tooltip {
-            visibility: visible;
-            opacity: 1;
-        }
+        .materia.locked:hover .tooltip { visibility: visible; }
 
         .btn-reset {
-            margin-top: 15px;
-            background: transparent;
-            border: 1px solid #ef4444;
-            color: #ef4444;
-            padding: 6px 12px;
-            border-radius: 8px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.8rem;
-            transition: 0.3s;
-        }
-
-        .btn-reset:hover { background: #ef4444; color: white; }
-
-        @media (max-width: 1200px) {
-            .malla-container { grid-template-columns: repeat(2, 1fr); min-width: auto; }
+            font-weight: 600;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Ingeniería Química - Malla Curricular</h1>
+    <h1 style="margin:0">Ingeniería Química - Malla Curricular</h1>
     <div class="stats">
-        <div class="stat-item" id="total-stat">Créditos Totales: 0</div>
-        <div class="stat-item" id="disc-stat">Créditos Disciplinares: 0</div>
+        <div class="stat-badge" id="total-c">Total Créditos: 0</div>
+        <div class="stat-badge" id="disc-c">Créditos Disciplinares: 0</div>
     </div>
-    <button class="btn-reset" onclick="resetApp()">Reiniciar Todo</button>
+    <button class="btn-reset" onclick="reset()">Reiniciar Progreso</button>
 </header>
 
-<div class="malla-container" id="malla"></div>
+<div class="malla-wrapper" id="grid"></div>
 
 <script>
-    const materiasData = [
+    const data = [
         { sem: 1, mat: [
             { id: "A", n: "Principios de Química", c: 3, r: [], cat: "Fundamentación" },
             { id: "LTB", n: "Lab. Técnicas Básicas", c: 3, r: [], cat: "Fundamentación" },
@@ -205,65 +177,65 @@
             { id: "IIQ", n: "Intro. Ing. Química", c: 3, r: [], cat: "Disciplinar" }
         ]},
         { sem: 2, mat: [
-            { id: "PAQ", n: "Principios Análisis Químico", c: 3, r: ["A"], cat: "Fundamentación" },
-            { id: "C", n: "Álgebra Lineal", c: 4, r: ["B"], cat: "Fundamentación" },
-            { id: "D", n: "Cálculo Integral", c: 4, r: ["B"], cat: "Fundamentación" },
-            { id: "E", n: "Fundamentos de Mecánica", c: 4, r: ["B"], cat: "Fundamentación" },
-            { id: "LL", n: "Balance de Materia", c: 3, r: [], cat: "Disciplinar" }
+            { id: "PAQ", n: "Principios Análisis Q.", c: 3, r: ["A"], cat: "Fundamentación" },
+            { id: "AL", n: "Álgebra Lineal", c: 4, r: ["B"], cat: "Fundamentación" },
+            { id: "CI", n: "Cálculo Integral", c: 4, r: ["B"], cat: "Fundamentación" },
+            { id: "FM", n: "Fund. de Mecánica", c: 4, r: ["B"], cat: "Fundamentación" },
+            { id: "BM", n: "Balance de Materia", c: 3, r: [], cat: "Disciplinar" }
         ]},
         { sem: 3, mat: [
-            { id: "LPAQ", n: "Lab. Princ. Análisis Q.", c: 3, r: ["A"], cat: "Fundamentación" },
+            { id: "LPA", n: "Lab. Principios Análisis", c: 3, r: ["A"], cat: "Fundamentación" },
             { id: "BIO", n: "Biología Molecular", c: 3, r: [], cat: "Fundamentación" },
-            { id: "F", n: "Cálculo Varias Variables", c: 4, r: ["C", "D"], cat: "Fundamentación" },
-            { id: "FEM", n: "Fund. Elec. y Magnetismo", c: 4, r: ["D", "E"], cat: "Fundamentación" },
-            { id: "G", n: "Termodinámica", c: 3, r: ["LL"], cat: "Disciplinar" },
+            { id: "CVV", n: "Cálculo Varias Var.", c: 4, r: ["AL", "CI"], cat: "Fundamentación" },
+            { id: "FEM", n: "Fund. Elec. y Mag.", c: 4, r: ["CI", "FM"], cat: "Fundamentación" },
+            { id: "TERM", n: "Termodinámica", c: 3, r: ["BM"], cat: "Disciplinar" },
             { id: "L1", n: "Libre Elección", c: 3, r: [], cat: "Libre" }
         ]},
         { sem: 4, mat: [
             { id: "QO", n: "Química Orgánica", c: 3, r: ["A"], cat: "Fundamentación" },
-            { id: "PRO", n: "Probabilidad y Est.", c: 3, r: ["B"], cat: "Fundamentación" },
-            { id: "H", n: "Ec. Diferenciales", c: 4, r: ["C", "D"], cat: "Fundamentación" },
-            { id: "KK", n: "Fluidos", c: 3, r: ["E", "G"], cat: "Disciplinar" },
-            { id: "T1", n: "Taller 1", c: 1, r: ["F", "G"], cat: "Disciplinar" },
-            { id: "HH", n: "Termodinámica Química", c: 3, r: ["F", "G"], cat: "Disciplinar" }
+            { id: "PROB", n: "Probabilidad y Est.", c: 3, r: ["B"], cat: "Fundamentación" },
+            { id: "ED", n: "Ecuaciones Diferenciales", c: 4, r: ["AL", "CI"], cat: "Fundamentación" },
+            { id: "FLUI", n: "Fluidos", c: 3, r: ["FM", "TERM"], cat: "Disciplinar" },
+            { id: "T1", n: "Taller 1", c: 1, r: ["CVV", "TERM"], cat: "Disciplinar" },
+            { id: "TQ", n: "Termodinámica Química", c: 3, r: ["CVV", "TERM"], cat: "Disciplinar" }
         ]},
         { sem: 5, mat: [
             { id: "QO2", n: "Química Orgánica II", c: 3, r: ["A"], cat: "Fundamentación" },
-            { id: "J", n: "Métodos Numéricos", c: 3, r: ["H"], cat: "Fundamentación" },
-            { id: "K", n: "Transferencia Calor", c: 4, r: ["G", "H"], cat: "Disciplinar" },
-            { id: "JJ", n: "Manejo de Sólidos", c: 3, r: ["KK"], cat: "Disciplinar" },
-            { id: "L", n: "Bal. Energía y Equil.", c: 3, r: ["HH"], cat: "Disciplinar" },
+            { id: "MN", n: "Métodos Numéricos", c: 3, r: ["ED"], cat: "Fundamentación" },
+            { id: "TC", n: "Transf. de Calor", c: 4, r: ["TERM", "ED"], cat: "Disciplinar" },
+            { id: "MS", n: "Manejo de Sólidos", c: 3, r: ["FLUI"], cat: "Disciplinar" },
+            { id: "BE", n: "Balance Energía y Equil.", c: 3, r: ["TQ"], cat: "Disciplinar" },
             { id: "L2", n: "Libre Elección", c: 3, r: [], cat: "Libre" }
         ]},
         { sem: 6, mat: [
             { id: "LQO", n: "Lab. Química Orgánica", c: 2, r: ["A"], cat: "Fundamentación" },
-            { id: "UU", n: "Ingeniería Económica", c: 3, r: ["D"], cat: "Fundamentación" },
-            { id: "M", n: "Transferencia Masa", c: 3, r: ["H"], cat: "Disciplinar" },
-            { id: "T2", n: "Taller 2", c: 1, r: ["H"], cat: "Disciplinar" },
-            { id: "LPT", n: "Lab. Prop. Termo.", c: 3, r: ["L"], cat: "Disciplinar" },
-            { id: "OT", n: "Opt. Termodinámica", c: 3, r: ["L"], cat: "Disciplinar" },
+            { id: "IE", n: "Ingeniería Económica", c: 3, r: ["CI"], cat: "Fundamentación" },
+            { id: "TM", n: "Transf. de Masa", c: 3, r: ["ED"], cat: "Disciplinar" },
+            { id: "T2", n: "Taller 2", c: 1, r: ["ED"], cat: "Disciplinar" },
+            { id: "LPT", n: "Lab. Prop. Termo.", c: 3, r: ["BE"], cat: "Disciplinar" },
+            { id: "OT", n: "Opt. Termodinámica", c: 3, r: ["BE"], cat: "Disciplinar" },
             { id: "L3", n: "Libre Elección", c: 3, r: [], cat: "Libre" }
         ]},
         { sem: 7, mat: [
-            { id: "OEA", n: "Opt. Econ-Admin", c: 3, r: [], cat: "Fundamentación" },
-            { id: "GGP", n: "Gerencia Proyectos", c: 3, r: ["UU"], cat: "Fundamentación" },
-            { id: "O", n: "Operaciones Separación", c: 3, r: ["M", "L"], cat: "Disciplinar" },
-            { id: "LF", n: "Lab. Fluidos y Calor", c: 3, r: ["K"], cat: "Disciplinar" },
-            { id: "N", n: "Ing. Reacciones Quím.", c: 3, r: ["L"], cat: "Disciplinar" },
+            { id: "OEA", n: "Optativa Econ-Admin", c: 3, r: [], cat: "Fundamentación" },
+            { id: "GGP", n: "Gerencia Proyectos", c: 3, r: ["IE"], cat: "Fundamentación" },
+            { id: "OS", n: "Oper. de Separación", c: 3, r: ["TM", "BE"], cat: "Disciplinar" },
+            { id: "LF", n: "Lab. Fluidos y Calor", c: 3, r: ["TC"], cat: "Disciplinar" },
+            { id: "IR", n: "Ing. Reacc. Química", c: 3, r: ["BE"], cat: "Disciplinar" },
             { id: "L4", n: "Libre Elección", c: 3, r: [], cat: "Libre" }
         ]},
         { sem: 8, mat: [
-            { id: "OM", n: "Optativa Materiales", c: 3, r: ["TOTAL_108"], cat: "Disciplinar" },
-            { id: "TT", n: "Control de Procesos", c: 3, r: ["J", "N"], cat: "Disciplinar" },
-            { id: "LSC", n: "Lab. Sep/Reac/Contr", c: 3, r: ["O", "TT"], cat: "Disciplinar" },
-            { id: "OPQ", n: "Opt. Proc. Químicos", c: 3, r: ["M", "N"], cat: "Disciplinar" },
-            { id: "P", n: "Diseño Procesos Q.", c: 3, r: ["L"], cat: "Disciplinar" },
+            { id: "OM", n: "Optativa Materiales", c: 3, r: ["CRED_108"], cat: "Disciplinar" },
+            { id: "CP", n: "Control de Procesos", c: 3, r: ["MN", "IR"], cat: "Disciplinar" },
+            { id: "LS", n: "Lab. Sep/Reac/Contr", c: 3, r: ["OS", "CP"], cat: "Disciplinar" },
+            { id: "OP", n: "Opt. Proc. Químicos", c: 3, r: ["TM", "IR"], cat: "Disciplinar" },
+            { id: "DP", n: "Diseño Procesos Quím.", c: 3, r: ["BE"], cat: "Disciplinar" },
             { id: "L5", n: "Libre Elección", c: 4, r: [], cat: "Libre" }
         ]},
         { sem: 9, mat: [
-            { id: "TPI", n: "Taller Proy. Inter.", c: 3, r: ["DISC_53"], cat: "Disciplinar" },
-            { id: "DPE", n: "Dis. Plantas y Equip.", c: 3, r: ["O", "P"], cat: "Disciplinar" },
-            { id: "IP", n: "Ingeniería Procesos", c: 3, r: ["P"], cat: "Disciplinar" },
+            { id: "TPI", n: "Taller Proy. Interdis.", c: 3, r: ["DISC_53"], cat: "Disciplinar" },
+            { id: "DPE", n: "Dis. Plantas y Equipos", c: 3, r: ["OS", "DP"], cat: "Disciplinar" },
+            { id: "IP", n: "Ingeniería Procesos", c: 3, r: ["DP"], cat: "Disciplinar" },
             { id: "L6", n: "Libre Elección", c: 3, r: [], cat: "Libre" },
             { id: "L7", n: "Libre Elección", c: 4, r: [], cat: "Libre" }
         ]},
@@ -276,111 +248,115 @@
         ]}
     ];
 
-    let approved = JSON.parse(localStorage.getItem('malla_iq_save')) || [];
+    let approved = JSON.parse(localStorage.getItem('quim_prog')) || [];
 
-    function save() {
-        localStorage.setItem('malla_iq_save', JSON.stringify(approved));
+    // Función para buscar datos de una materia por ID
+    function getMatInfo(id) {
+        for(let s of data) {
+            let m = s.mat.find(x => x.id === id);
+            if(m) return m;
+        }
+        return null;
     }
 
+    // Calcula estadísticas actuales
     function getStats() {
         let t = 0, d = 0;
-        materiasData.forEach(s => s.mat.forEach(m => {
-            if(approved.includes(m.id)) {
+        approved.forEach(id => {
+            const m = getMatInfo(id);
+            if(m) {
                 t += m.c;
                 if(m.cat === "Disciplinar") d += m.c;
             }
-        }));
+        });
         return { total: t, disc: d };
     }
 
-    function getName(id) {
-        for(let s of materiasData) {
-            let m = s.mat.find(x => x.id === id);
-            if(m) return m.n;
-        }
-        return id;
-    }
-
-    function checkRequirements(reqList) {
+    // RECALCULA REQUISITOS EN EL MOMENTO DEL CLICK (Solución al error)
+    function checkStatus(materiaId) {
+        const m = getMatInfo(materiaId);
         const stats = getStats();
         let missing = [];
-        
-        reqList.forEach(r => {
-            if(r === "TOTAL_108") { if(stats.total < 108) missing.push(`108 cred totales (Llevas ${stats.total})`); }
-            else if(r === "DISC_53") { if(stats.disc < 53) missing.push(`53 cred disc. (Llevas ${stats.disc})`); }
-            else if(r === "DISC_60") { if(stats.disc < 60) missing.push(`60 cred disc. (Llevas ${stats.disc})`); }
-            else if(!approved.includes(r)) {
-                missing.push(getName(r));
+
+        m.r.forEach(req => {
+            if(req === "CRED_108") { if(stats.total < 108) missing.push("108 créditos totales"); }
+            else if(req === "DISC_53") { if(stats.disc < 53) missing.push("53 créditos disc."); }
+            else if(req === "DISC_60") { if(stats.disc < 60) missing.push("60 créditos disc."); }
+            else if(!approved.includes(req)) {
+                const reqMat = getMatInfo(req);
+                missing.push(reqMat ? reqMat.n : req);
             }
         });
-        return missing;
+
+        return { isLocked: missing.length > 0, missing };
     }
 
-    function handleMateriaClick(id, isLocked) {
-        if(isLocked && !approved.includes(id)) return;
-        
+    function toggle(id) {
+        // Al hacer click, recalculamos si está bloqueada en este instante
+        const { isLocked } = checkStatus(id);
+
         if(approved.includes(id)) {
             approved = approved.filter(x => x !== id);
         } else {
-            approved.push(id);
+            if(!isLocked) {
+                approved.push(id);
+            } else {
+                return; // No hace nada si está bloqueada
+            }
         }
-        save();
+        localStorage.setItem('quim_prog', JSON.stringify(approved));
         render();
     }
 
     function render() {
-        const container = document.getElementById('malla');
+        const grid = document.getElementById('grid');
         const stats = getStats();
-        document.getElementById('total-stat').innerText = `Créditos Totales: ${stats.total}`;
-        document.getElementById('disc-stat').innerText = `Créditos Disciplinares: ${stats.disc}`;
+        document.getElementById('total-c').innerText = `Créditos Totales: ${stats.total}`;
+        document.getElementById('disc-c').innerText = `Créditos Disciplinares: ${stats.disc}`;
         
-        container.innerHTML = '';
+        grid.innerHTML = '';
 
-        materiasData.forEach(semestre => {
+        data.forEach(semestre => {
             const col = document.createElement('div');
             col.className = 'semestre-col';
-            col.innerHTML = `<div class="semestre-header">Semestre ${semestre.sem}</div>`;
+            col.innerHTML = `<div class="sem-header">Semestre ${semestre.sem}</div>`;
             
             let lastCat = "";
             semestre.mat.forEach(m => {
                 if(m.cat !== lastCat) {
-                    col.innerHTML += `<div class="category-label">${m.cat}</div>`;
+                    col.innerHTML += `<div class="cat-tag">${m.cat}</div>`;
                     lastCat = m.cat;
                 }
 
-                const missing = checkRequirements(m.r);
-                const isLocked = missing.length > 0;
+                // Aquí calculamos el estado visual
+                const { isLocked, missing } = checkStatus(m.id);
                 const isApproved = approved.includes(m.id);
 
                 const card = document.createElement('div');
                 card.className = `materia ${isApproved ? 'approved' : ''} ${(isLocked && !isApproved) ? 'locked' : ''}`;
                 
-                // Evento directo
-                card.onclick = () => handleMateriaClick(m.id, isLocked);
-
-                let tooltipText = isApproved ? "Click para desmarcar" : (isLocked ? "Falta: " + missing.join(", ") : "Click para aprobar");
+                // Pasamos solo el ID, la función toggle decidirá si procede o no
+                card.onclick = () => toggle(m.id);
 
                 card.innerHTML = `
-                    <span class="materia-name">${m.n}</span>
-                    <span class="materia-credits">${m.c} Créditos</span>
-                    <div class="tooltip">${tooltipText}</div>
+                    <span class="m-name">${m.n}</span>
+                    <span class="m-cred">${m.c} Créditos</span>
+                    ${(isLocked && !isApproved) ? `<div class="tooltip">Falta: ${missing.join(", ")}</div>` : ''}
                 `;
-                
                 col.appendChild(card);
             });
-            container.appendChild(col);
+            grid.appendChild(col);
         });
     }
 
-    function resetApp() {
-        if(confirm("¿Estás seguro de reiniciar todo el progreso?")) {
+    function reset() {
+        if(confirm("¿Borrar todo el progreso?")) {
             approved = [];
-            save();
+            localStorage.removeItem('quim_prog');
             render();
         }
     }
 
-    // Inicialización
     render();
 </script>
 
